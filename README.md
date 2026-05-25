@@ -24,6 +24,42 @@ npm run preview
 
 Open [http://localhost:5173](http://localhost:5173) to view in browser.
 
+## 🧩 Backend API
+
+This repo now includes a simple Express backend in `server/` with authentication, loan dashboard, M-PESA stub routes, and contact handling.
+
+```bash
+# Start the backend API server
+npm run server
+```
+
+The frontend proxy is configured so `/api/*` requests are forwarded to the backend while running `npm run dev`.
+
+## 🚢 Deployment
+
+A Docker image is now configured for fullstack deployment. The backend serves the static frontend build from `dist/` and exposes the API on port `5000`.
+
+### Local Docker run
+
+```bash
+# Build the app image
+docker build -t saidika-loans .
+
+# Run it locally
+docker run -p 5000:5000 saidika-loans
+```
+
+Then open `http://localhost:5000`.
+
+### GitHub Container Registry
+
+A GitHub Actions workflow is configured at `.github/workflows/docker-publish.yml`. On push to `main`, it builds the container and publishes it to GitHub Container Registry as:
+
+- `ghcr.io/${{ github.repository_owner }}/saidika-loans:latest`
+- `ghcr.io/${{ github.repository_owner }}/saidika-loans:${{ github.sha }}`
+
+You can then deploy that image to any container host (Render, Railway, Fly, Azure, etc.).
+
 ---
 
 ## 📁 Project Structure

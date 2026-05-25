@@ -5,9 +5,10 @@ export const useAuthStore = create(
   persist(
     (set) => ({
       user: null,
+      token: null,
       isAuthenticated: false,
-      login: (userData) => set({ user: userData, isAuthenticated: true }),
-      logout: () => set({ user: null, isAuthenticated: false }),
+      login: (userData, token) => set({ user: userData, token, isAuthenticated: true }),
+      logout: () => set({ user: null, token: null, isAuthenticated: false }),
       updateUser: (data) => set((state) => ({ user: { ...state.user, ...data } })),
     }),
     { name: 'saidika-auth' }

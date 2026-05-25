@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { Menu, X, Moon, Sun } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useAuthStore } from '../../store/authStore'
 import { useThemeStore } from '../../store/themeStore'
 import { useScrolled } from '../../hooks/useScrolled'
 import { NAV_LINKS } from '../../utils/constants'
@@ -9,7 +10,9 @@ import { NAV_LINKS } from '../../utils/constants'
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const { isDark, toggleTheme } = useThemeStore()
+  const { isAuthenticated, user, logout } = useAuthStore()
   const scrolled = useScrolled()
+  const navigate = useNavigate()
 
   return (
     <>
@@ -55,12 +58,34 @@ export default function Navbar() {
             >
               {isDark ? <Sun size={16} /> : <Moon size={16} />}
             </button>
-            <Link to="/login" className="btn-ghost text-gray-700 dark:text-gray-300">
-              Login
-            </Link>
-            <Link to="/register" className="btn-primary">
-              Apply Now
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="btn-ghost text-gray-700 dark:text-gray-300"
+                >
+                  Dashboard
+                </button>
+                <button
+                  onClick={() => {
+                    logout()
+                    navigate('/')
+                  }}
+                  className="btn-primary"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="btn-ghost text-gray-700 dark:text-gray-300">
+                  Login
+                </Link>
+                <Link to="/register" className="btn-primary">
+                  Apply Now
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile: theme + hamburger */}
@@ -112,20 +137,48 @@ export default function Navbar() {
                 </NavLink>
               ))}
               <div className="flex gap-2 pt-3 border-t border-gray-100 dark:border-navy-card mt-2">
-                <Link
-                  to="/login"
-                  onClick={() => setMobileOpen(false)}
-                  className="btn-ghost flex-1 text-center"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  onClick={() => setMobileOpen(false)}
-                  className="btn-primary flex-1 text-center"
-                >
-                  Apply Now
-                </Link>
+                {isAuthenticated ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMobileOpen(false)
+                        navigate('/dashboard')
+                      }}
+                      className="btn-ghost flex-1 text-center"
+                    >
+                      Dashboard
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        logout()
+                        setMobileOpen(false)
+                        navigate('/')
+                      }}
+                      className="btn-primary flex-1 text-center"
+                    >
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      onClick={() => setMobileOpen(false)}
+                      className="btn-ghost flex-1 text-center"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      to="/register"
+                      onClick={() => setMobileOpen(false)}
+                      className="btn-primary flex-1 text-center"
+                    >
+                      Apply Now
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
